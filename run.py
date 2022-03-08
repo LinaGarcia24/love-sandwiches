@@ -13,11 +13,12 @@ SCOPED_CREDS = CREDS.with_scopes(SCOPE)
 GSPREAD_CLIENT = gspread.authorize(SCOPED_CREDS)
 SHEET = GSPREAD_CLIENT.open('love_sandwiches')
 
+
 def get_sales_data():
     """
     Get sales figures input from user.
     Run while loop to collect a valid string of data from the user
-    via the terminal, which must be a string of 6 numbers separated 
+    via the terminal, which must be a string of 6 numbers separated
     by commas. The loop will repeatedly request data, until it is valid.
     """
     while True:
@@ -35,6 +36,7 @@ def get_sales_data():
 
     return sales_data
 
+
 def validate_data(values):
     """
     Inside the try, converts all string values into integers.
@@ -50,8 +52,9 @@ def validate_data(values):
     except ValueError as e:
         print(f"Invalid data: {e}, please try again.")
         return False
-    
+
     return True
+
 
 def update_sales_worksheet(data):
     """
@@ -81,8 +84,17 @@ def calculate_surplus_data(sales_row):
     for stock, sales in zip(stock_row, sales_row):
         surplus = int(stock) - sales
         surplus_data.append(surplus)
-    
     return surplus_data
+
+
+def update_surplus_worksheet(data):
+    """
+    Updates surplus worksheet, adds new row with surplus data provided
+    """
+    print("Updating surplus worksheet...\n")
+    surplus_worksheet = SHEET.worksheet("surplus")
+    surplus_worksheet.append_row(data)
+    print("Surplus worksheet updated successfully.\n")
 
 
 def main():
@@ -93,8 +105,8 @@ def main():
     sales_data = [int(num) for num in data]
     update_sales_worksheet(sales_data)
     new_surplus_data = calculate_surplus_data(sales_data)
+    update_surplus_worksheet(new_surplus_data)
 
-    print(new_surplus_data)
 
 print("Welcome to Love Sandwiches Data Automation")
 main()
